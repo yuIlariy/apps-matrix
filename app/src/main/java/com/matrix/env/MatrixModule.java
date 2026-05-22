@@ -143,7 +143,7 @@ public class MatrixModule implements IXposedHookLoadPackage {
 
             obj.put("network_country", "nl");
 
-            obj.put("locale_language", "nl");
+            obj.put("locale_language", "en");
             obj.put("locale_country", "NL");
 
             obj.put("timezone", "Europe/Amsterdam");
