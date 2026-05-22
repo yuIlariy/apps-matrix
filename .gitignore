@@ -6,3 +6,8 @@ libs/
 *.dex
 CLAUDE.MD
 ui-preview.html
+
+.gradle/
+local.properties
+*.jks
+*.idsig
