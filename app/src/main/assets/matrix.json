@@ -7,7 +7,7 @@
     "network_operator": "20408",
     "network_operator_name": "KPN",
     "network_country": "nl",
-    "locale_language": "nl",
+    "locale_language": "en",
     "locale_country": "NL",
     "timezone": "Europe/Amsterdam"
   },
@@ -20,7 +20,7 @@
     "network_operator": "20408",
     "network_operator_name": "KPN",
     "network_country": "nl",
-    "locale_language": "nl",
+    "locale_language": "en",
     "locale_country": "NL",
     "timezone": "Europe/Amsterdam"
   },
