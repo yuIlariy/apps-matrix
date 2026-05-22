@@ -55,9 +55,9 @@ android {
 
 dependencies {
 
-    // Xposed API
-    compileOnly 'de.robv.android.xposed:api:82'
+    // Local Xposed API jar
+    compileOnly files('../stubs/XposedBridgeApi-82.jar')
 
-    // JSON
+    // JSON library
     implementation 'org.json:json:20240303'
 }
