@@ -23,10 +23,6 @@ android {
 
             minifyEnabled false
             shrinkResources false
-
-            proguardFiles getDefaultProguardFile(
-                    'proguard-android-optimize.txt'
-            ), 'proguard-rules.pro'
         }
 
         debug {
@@ -53,11 +49,19 @@ android {
     }
 }
 
+repositories {
+
+    google()
+    mavenCentral()
+
+    maven {
+        url 'https://api.xposed.info/'
+    }
+}
+
 dependencies {
 
-    // Local Xposed API jar
-    compileOnly files('../stubs/XposedBridgeApi-82.jar')
+    compileOnly 'de.robv.android.xposed:api:82'
 
-    // JSON library
     implementation 'org.json:json:20240303'
 }
