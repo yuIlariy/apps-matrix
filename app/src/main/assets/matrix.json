@@ -1,50 +1,53 @@
 {
   "com.zhiliaoapp.musically": {
     "label": "TikTok",
-    "sim_operator": "310260",
-    "sim_operator_name": "T-Mobile",
-    "sim_country": "us",
-    "network_operator": "310260",
-    "network_operator_name": "T-Mobile",
-    "network_country": "us",
-    "locale_language": "en",
-    "locale_country": "US",
-    "timezone": "America/New_York"
+    "sim_operator": "20408",
+    "sim_operator_name": "KPN",
+    "sim_country": "nl",
+    "network_operator": "20408",
+    "network_operator_name": "KPN",
+    "network_country": "nl",
+    "locale_language": "nl",
+    "locale_country": "NL",
+    "timezone": "Europe/Amsterdam"
   },
+
   "com.ss.android.ugc.aweme": {
     "label": "Douyin-as-TikTok",
-    "sim_operator": "310260",
-    "sim_operator_name": "T-Mobile",
-    "sim_country": "us",
-    "network_operator": "310260",
-    "network_operator_name": "T-Mobile",
-    "network_country": "us",
-    "locale_language": "en",
-    "locale_country": "US",
-    "timezone": "America/New_York"
+    "sim_operator": "20408",
+    "sim_operator_name": "KPN",
+    "sim_country": "nl",
+    "network_operator": "20408",
+    "network_operator_name": "KPN",
+    "network_country": "nl",
+    "locale_language": "nl",
+    "locale_country": "NL",
+    "timezone": "Europe/Amsterdam"
   },
+
   "com.anthropic.claude": {
     "label": "Claude",
-    "sim_operator": "310260",
-    "sim_operator_name": "T-Mobile",
-    "sim_country": "us",
-    "network_operator": "310260",
-    "network_operator_name": "T-Mobile",
-    "network_country": "us",
+    "sim_operator": "20408",
+    "sim_operator_name": "KPN",
+    "sim_country": "nl",
+    "network_operator": "20408",
+    "network_operator_name": "KPN",
+    "network_country": "nl",
     "locale_language": "en",
-    "locale_country": "US",
-    "timezone": "America/Los_Angeles"
+    "locale_country": "NL",
+    "timezone": "Europe/Amsterdam"
   },
+
   "com.jingdong.app.mall": {
     "label": "JD",
-    "sim_operator": "46000",
-    "sim_operator_name": "CMCC",
-    "sim_country": "cn",
-    "network_operator": "46000",
-    "network_operator_name": "中国移动",
-    "network_country": "cn",
-    "locale_language": "zh",
-    "locale_country": "CN",
-    "timezone": "Asia/Shanghai"
+    "sim_operator": "20408",
+    "sim_operator_name": "KPN",
+    "sim_country": "nl",
+    "network_operator": "20408",
+    "network_operator_name": "KPN",
+    "network_country": "nl",
+    "locale_language": "en",
+    "locale_country": "NL",
+    "timezone": "Europe/Amsterdam"
   }
 }
