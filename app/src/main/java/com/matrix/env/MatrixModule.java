@@ -2,6 +2,7 @@ package com.matrix.env;
 
 import org.json.JSONObject;
 
+import java.util.Calendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -22,31 +23,48 @@ public class MatrixModule implements IXposedHookLoadPackage {
 
         XposedBridge.log(TAG + ": handleLoadPackage -> " + pkg);
 
-        // Avoid dangerous/system packages
         if (shouldSkipPackage(pkg)) {
+
             XposedBridge.log(TAG + ": skipped package -> " + pkg);
+
             return;
         }
 
-        // Try custom config first
         JSONObject matrix = loadMatrixFor(pkg);
 
-        // Fallback to default Netherlands profile
         if (matrix == null) {
+
             matrix = createDefaultDutchProfile();
-            XposedBridge.log(TAG + ": using default NL profile for -> " + pkg);
+
+            XposedBridge.log(
+                    TAG + ": using default NL profile for -> " + pkg
+            );
+
         } else {
-            XposedBridge.log(TAG + ": using custom profile for -> " + pkg);
+
+            XposedBridge.log(
+                    TAG + ": using custom profile for -> " + pkg
+            );
         }
 
-        // Hook TelephonyManager
-        hookMethod(lpparam, "getSimOperator", matrix, "sim_operator");
-        hookMethod(lpparam, "getSimOperatorName", matrix, "sim_operator_name");
-        hookMethod(lpparam, "getSimCountryIso", matrix, "sim_country");
+        // Telephony
+        hookMethod(lpparam, "getSimOperator",
+                matrix, "sim_operator");
 
-        hookMethod(lpparam, "getNetworkOperator", matrix, "network_operator");
-        hookMethod(lpparam, "getNetworkOperatorName", matrix, "network_operator_name");
-        hookMethod(lpparam, "getNetworkCountryIso", matrix, "network_country");
+        hookMethod(lpparam, "getSimOperatorName",
+                matrix, "sim_operator_name");
+
+        hookMethod(lpparam, "getSimCountryIso",
+                matrix, "sim_country");
+
+        hookMethod(lpparam, "getNetworkOperator",
+                matrix, "network_operator");
+
+        hookMethod(lpparam, "getNetworkOperatorName",
+                matrix, "network_operator_name");
+
+        hookMethod(lpparam, "getNetworkCountryIso",
+                matrix, "network_country");
 
         // Locale
         hookLocale(lpparam, matrix);
@@ -54,7 +72,9 @@ public class MatrixModule implements IXposedHookLoadPackage {
         // Timezone
         hookTimeZone(lpparam, matrix);
 
-        XposedBridge.log(TAG + ": hooks installed -> " + pkg);
+        XposedBridge.log(
+                TAG + ": hooks installed -> " + pkg
+        );
     }
 
     private boolean shouldSkipPackage(String pkg) {
@@ -63,7 +83,7 @@ public class MatrixModule implements IXposedHookLoadPackage {
             return true;
         }
 
-        // Skip Android/system components
+        // Core Android/system
         if (
                 pkg.equals("android") ||
                 pkg.startsWith("com.android") ||
@@ -78,7 +98,7 @@ public class MatrixModule implements IXposedHookLoadPackage {
 
         String lower = pkg.toLowerCase();
 
-        // Skip Safaricom
+        // Safaricom
         if (
                 lower.contains("safaricom") ||
                 lower.contains("mpesa") ||
@@ -87,17 +107,18 @@ public class MatrixModule implements IXposedHookLoadPackage {
             return true;
         }
 
-        // Skip banking/payment apps
+        // Banking/payment/security
         if (
                 lower.contains("bank") ||
                 lower.contains("finance") ||
                 lower.contains("wallet") ||
                 lower.contains("paypal") ||
-                lower.contains("pay") ||
+                lower.contains("gpay") ||
                 lower.contains("wise") ||
                 lower.contains("revolut") ||
                 lower.contains("binance") ||
-                lower.contains("crypto")
+                lower.contains("crypto") ||
+                lower.contains("payment")
         ) {
             return true;
         }
@@ -131,7 +152,10 @@ public class MatrixModule implements IXposedHookLoadPackage {
 
         } catch (Throwable t) {
 
-            XposedBridge.log(TAG + ": default profile error -> " + t.getMessage());
+            XposedBridge.log(
+                    TAG + ": default profile error -> "
+                            + t.getMessage()
+            );
 
             return null;
         }
@@ -144,7 +168,9 @@ public class MatrixModule implements IXposedHookLoadPackage {
             java.io.InputStream is =
                     getClass()
                             .getClassLoader()
-                            .getResourceAsStream("assets/matrix.json");
+                            .getResourceAsStream(
+                                    "assets/matrix.json"
+                            );
 
             if (is == null) {
                 return null;
@@ -158,21 +184,31 @@ public class MatrixModule implements IXposedHookLoadPackage {
             int len;
 
             while ((len = is.read(tmp)) != -1) {
+
                 baos.write(tmp, 0, len);
             }
 
             is.close();
 
             JSONObject root =
-                    new JSONObject(new String(baos.toByteArray(), "UTF-8"));
+                    new JSONObject(
+                            new String(
+                                    baos.toByteArray(),
+                                    "UTF-8"
+                            )
+                    );
 
             if (root.has(packageName)) {
+
                 return root.getJSONObject(packageName);
             }
 
         } catch (Throwable t) {
 
-            XposedBridge.log(TAG + ": matrix load error -> " + t.getMessage());
+            XposedBridge.log(
+                    TAG + ": matrix load error -> "
+                            + t.getMessage()
+            );
         }
 
         return null;
@@ -195,11 +231,14 @@ public class MatrixModule implements IXposedHookLoadPackage {
                     new XC_MethodHook() {
 
                         @Override
-                        protected void afterHookedMethod(MethodHookParam param) {
+                        protected void afterHookedMethod(
+                                MethodHookParam param
+                        ) {
 
                             try {
 
-                                String val = matrix.getString(configKey);
+                                String val =
+                                        matrix.getString(configKey);
 
                                 param.setResult(val);
 
@@ -212,11 +251,14 @@ public class MatrixModule implements IXposedHookLoadPackage {
         } catch (Throwable t) {
 
             XposedBridge.log(
-                    TAG + ": hook fail -> " + methodName + " : " + t.getMessage()
+                    TAG + ": hook fail -> "
+                            + methodName
+                            + " : "
+                            + t.getMessage()
             );
         }
 
-        // int subscriptionId overload
+        // subscription overload
         try {
 
             XposedHelpers.findAndHookMethod(
@@ -227,11 +269,14 @@ public class MatrixModule implements IXposedHookLoadPackage {
                     new XC_MethodHook() {
 
                         @Override
-                        protected void afterHookedMethod(MethodHookParam param) {
+                        protected void afterHookedMethod(
+                                MethodHookParam param
+                        ) {
 
                             try {
 
-                                String val = matrix.getString(configKey);
+                                String val =
+                                        matrix.getString(configKey);
 
                                 param.setResult(val);
 
@@ -268,7 +313,9 @@ public class MatrixModule implements IXposedHookLoadPackage {
                     new XC_MethodHook() {
 
                         @Override
-                        protected void afterHookedMethod(MethodHookParam param) {
+                        protected void afterHookedMethod(
+                                MethodHookParam param
+                        ) {
 
                             param.setResult(spoofed);
                         }
@@ -280,7 +327,8 @@ public class MatrixModule implements IXposedHookLoadPackage {
         } catch (Throwable t) {
 
             XposedBridge.log(
-                    TAG + ": locale hook fail -> " + t.getMessage()
+                    TAG + ": locale hook fail -> "
+                            + t.getMessage()
             );
         }
     }
@@ -298,6 +346,7 @@ public class MatrixModule implements IXposedHookLoadPackage {
             final TimeZone spoofedTz =
                     TimeZone.getTimeZone(tz);
 
+            // java.util.TimeZone
             XposedHelpers.findAndHookMethod(
                     "java.util.TimeZone",
                     lpparam.classLoader,
@@ -305,19 +354,91 @@ public class MatrixModule implements IXposedHookLoadPackage {
                     new XC_MethodHook() {
 
                         @Override
-                        protected void afterHookedMethod(MethodHookParam param) {
+                        protected void afterHookedMethod(
+                                MethodHookParam param
+                        ) {
 
                             param.setResult(spoofedTz);
                         }
                     }
             );
 
-            XposedBridge.log(TAG + ": timezone hooked");
+            // java.util.Calendar
+            XposedHelpers.findAndHookMethod(
+                    "java.util.Calendar",
+                    lpparam.classLoader,
+                    "getInstance",
+                    new XC_MethodHook() {
+
+                        @Override
+                        protected void afterHookedMethod(
+                                MethodHookParam param
+                        ) {
+
+                            try {
+
+                                Calendar cal =
+                                        (Calendar) param.getResult();
+
+                                if (cal != null) {
+
+                                    cal.setTimeZone(spoofedTz);
+
+                                    param.setResult(cal);
+                                }
+
+                            } catch (Throwable ignored) {
+                            }
+                        }
+                    }
+            );
+
+            // ICU timezone for Chromium/WebView
+            try {
+
+                XposedHelpers.findAndHookMethod(
+                        "android.icu.util.TimeZone",
+                        lpparam.classLoader,
+                        "getDefault",
+                        new XC_MethodHook() {
+
+                            @Override
+                            protected void afterHookedMethod(
+                                    MethodHookParam param
+                            ) {
+
+                                try {
+
+                                    Object icuTz =
+                                            XposedHelpers.callStaticMethod(
+                                                    XposedHelpers.findClass(
+                                                            "android.icu.util.TimeZone",
+                                                            lpparam.classLoader
+                                                    ),
+                                                    "getTimeZone",
+                                                    tz
+                                            );
+
+                                    param.setResult(icuTz);
+
+                                } catch (Throwable ignored) {
+                                }
+                            }
+                        }
+                );
+
+            } catch (Throwable ignored) {
+            }
+
+            XposedBridge.log(
+                    TAG + ": timezone hooked -> " + tz
+            );
 
         } catch (Throwable t) {
 
             XposedBridge.log(
-                    TAG + ": timezone hook fail -> " + t.getMessage()
+                    TAG + ": timezone hook fail -> "
+                            + t.getMessage()
             );
         }
     }
